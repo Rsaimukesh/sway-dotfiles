@@ -1,0 +1,185 @@
+########################################
+# BASIC SETUP
+########################################
+
+set $mod Mod4
+font pango:JetBrainsMono Nerd Font 10
+xwayland enable
+
+
+########################################
+# WALLPAPER
+########################################
+
+output * bg $HOME/Downloads/JapaneseCity.png fill
+
+
+########################################
+# AUTOSTART
+########################################
+
+exec_always --no-startup-id mako
+exec_always --no-startup-id sh -c 'sleep 2; pkill waybar; waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css'
+exec_always --no-startup-id libinput-gestures-setup start
+
+
+########################################
+# ROFI
+########################################
+
+# Super → App launcher (Type-5)
+bindsym --release Super_L exec sh -c 'pgrep -x rofi >/dev/null && pkill rofi || ~/.config/rofi/launchers/type-5/launcher.sh'
+
+# Super + C → Clipboard
+bindsym $mod+c exec rofi -show clipboard
+
+# Super + X → Power menu
+bindsym $mod+x exec ~/.config/rofi/menus/power.sh
+
+
+########################################
+# APPLICATIONS
+########################################
+
+set $terminal alacritty
+set $browser firefox
+
+bindsym $mod+Return exec $terminal
+bindsym $mod+b exec $browser
+
+# File manager
+bindsym $mod+f exec thunar
+
+
+########################################
+# INPUT (TOUCHPAD)
+########################################
+
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+
+########################################
+# WINDOW MANAGEMENT
+########################################
+
+floating_modifier $mod
+default_border pixel 2
+
+gaps inner 10
+gaps outer 5
+
+# Focus windows
+bindsym $mod+Left  focus left
+bindsym $mod+Right focus right
+bindsym $mod+Up    focus up
+bindsym $mod+Down  focus down
+
+# Move windows
+bindsym $mod+Shift+Left  move left
+bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+Up    move up
+bindsym $mod+Shift+Down  move down
+
+# Layouts
+bindsym $mod+h split h
+bindsym $mod+v split v
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Window actions
+bindsym $mod+q kill
+bindsym $mod+space floating toggle
+bindsym $mod+Shift+space focus mode_toggle
+
+# Fullscreen
+bindsym $mod+Shift+f fullscreen toggle
+
+
+########################################
+# WORKSPACES
+########################################
+
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# Move container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# Workspace navigation (requested)
+bindsym $mod+Ctrl+Left workspace prev
+bindsym $mod+Ctrl+Right workspace next
+
+
+########################################
+# SCREENSHOTS
+########################################
+
+# Print → Full screen
+bindsym Print exec grim "$HOME/Pictures/screenshot_$(date +%F_%T).png"
+
+# Win + Shift + S → Area
+bindsym $mod+Shift+s exec sh -c 'grim -g "$(slurp)" "$HOME/Pictures/screenshot_$(date +%F_%T).png"'
+
+# Win + Ctrl + S → Area → clipboard
+bindsym $mod+Ctrl+s exec sh -c 'grim -g "$(slurp)" - | wl-copy'
+
+
+########################################
+# MEDIA & HARDWARE KEYS
+########################################
+
+# Volume
+bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+# Brightness
+bindsym XF86MonBrightnessUp exec brightnessctl set +10%
+bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
+
+# Calculator
+bindsym XF86Calculator exec qalculate-gtk
+
+# Lock screen
+bindsym XF86ScreenSaver exec swaylock
+
+
+########################################
+# SESSION CONTROL
+########################################
+
+bindsym $mod+Shift+r reload
+bindsym $mod+Shift+e exec swaynag -t warning -m "Exit Sway?" -b "Yes" "swaymsg exit"

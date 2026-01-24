@@ -1,0 +1,98 @@
+{
+  "layer": "top",
+  "position": "top",
+  "exclusive": true,
+  "height": 36,
+
+  "modules-left": [
+    "custom/appmenu",
+    "sway/workspaces"
+  ],
+
+  "modules-center": [
+    "clock"
+  ],
+
+  "modules-right": [
+    "custom/brightness",
+    "custom/volume",
+    "network",
+    "cpu",
+    "memory",
+    "custom/battery",
+    "custom/power"
+  ],
+
+  "sway/workspaces": {
+    "disable-scroll": true,
+    "format": "{name}"
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": " {:%H:%M:%S}",
+    "format-alt": " {:%d-%m-%Y}",
+    "tooltip": false
+  },
+
+  "cpu": {
+    "interval": 2,
+    "format": " {usage}%",
+    "tooltip": true
+  },
+
+  "memory": {
+    "interval": 5,
+    "format": " {percentage}%",
+    "tooltip": true
+  },
+
+  "network": {
+    "interval": 5,
+    "format-wifi": " {signalStrength}%",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "",
+    "tooltip": true,
+    "tooltip-format": "{ifname}\nIP: {ipaddr}\nSignal: {signalStrength}%",
+    "on-click": "nm-connection-editor"
+  },
+
+  "custom/battery": {
+    "exec": "cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n1",
+    "interval": 30,
+    "format": " {}%",
+    "tooltip": "Battery",
+    "on-click": "~/.config/rofi/menus/battery.sh"
+  },
+
+
+"custom/appmenu": {
+  "format": "Application",
+  "tooltip": "Applications",
+  "on-click": "~/.config/rofi/launchers/type-5/launcher.sh"
+},
+
+
+
+"custom/brightness": {
+  "exec": "brightnessctl -m -d amdgpu_bl0 | cut -d',' -f4",
+  "interval": 1,
+  "format": " {}",
+  "tooltip": "Brightness",
+  "on-click": "~/.config/rofi/menus/brightness.sh"
+},
+
+  "custom/volume": {
+    "exec": "pactl get-sink-volume @DEFAULT_SINK@ | grep -o '[0-9]\\+%' | head -n1",
+    "interval": 1,
+    "format": " {}",
+    "tooltip": "Volume",
+    "on-click": "~/.config/rofi/menus/volume.sh"
+  },
+
+  "custom/power": {
+    "format": "⏻",
+    "tooltip": "Power Menu",
+    "on-click": "~/.config/rofi/menus/power.sh"
+  }
+}
