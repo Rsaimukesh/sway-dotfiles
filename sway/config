@@ -21,6 +21,8 @@ output * bg $HOME/Downloads/JapaneseCity.png fill
 exec_always --no-startup-id mako
 exec_always --no-startup-id sh -c 'sleep 2; pkill waybar; waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css'
 exec_always --no-startup-id libinput-gestures-setup start
+exec_always --no-startup-id wl-paste --type text --watch cliphist store
+exec_always --no-startup-id wl-paste --type image --watch cliphist store
 
 
 ########################################
@@ -30,8 +32,8 @@ exec_always --no-startup-id libinput-gestures-setup start
 # Super → App launcher (Type-5)
 bindsym --release Super_L exec sh -c 'pgrep -x rofi >/dev/null && pkill rofi || ~/.config/rofi/launchers/type-5/launcher.sh'
 
-# Super + C → Clipboard
-bindsym $mod+c exec rofi -show clipboard
+# Win + C → Clipboard history (Rofi)
+bindsym $mod+c exec sh -c 'cliphist list | rofi -dmenu -p "Clipboard" -theme ~/.config/rofi/launchers/type-5/style-3.rasi | cliphist decode | wl-copy'
 
 # Super + X → Power menu
 bindsym $mod+x exec ~/.config/rofi/menus/power.sh
