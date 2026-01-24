@@ -1,0 +1,34 @@
+# Packages required for this setup (Debian/Ubuntu/Kali)
+# Install with: sudo apt install -y $(tr '\n' ' ' < requirements.txt | sed 's/#.*//g')
+
+sway
+swaylock
+waybar
+rofi
+alacritty
+mako-notifier
+
+# Screenshots & clipboard
+grim
+slurp
+wl-clipboard
+
+# System controls
+brightnessctl
+nm-connection-editor
+qalculate-gtk
+xfce4-power-manager
+
+# Audio (choose your stack)
+# pipewire-pulse OR pulseaudio-utils
+pipewire-pulse
+
+# File manager
+thunar
+
+# Gestures
+libinput-gestures
+libinput-tools
+
+# Fonts (install a Nerd Font manually or via your distro)
+# e.g., fonts-jetbrains-mono (not Nerd variant) or a packaged Nerd Font

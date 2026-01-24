@@ -4,20 +4,22 @@ Personal Wayland setup for Sway + Waybar with Rofi launchers/menus, Alacritty, a
 
 ## Included
 - [sway/](sway/) – Sway WM config, keybindings, autostart
-- [waybar/](waybar/) – Waybar modules, styles, and scripts
+- [waybar/](waybar/) – Waybar modules, styles, and scripts (including battery notifications)
 - [rofi/](rofi/) – Rofi app launcher (Type-5) and menu scripts
 - [alacritty/](alacritty/) – Alacritty terminal config
-- [libinput-gestures.conf](libinput-gestures.conf) – Touchpad gestures mapped to Sway actions
+- [mako/](mako/) – Mako notification daemon config
+- [wob/](wob/) – WOB (overlay bar) config for volume/brightness
+- [gestures/](gestures/) – Touchpad gestures (libinput-gestures)
+- [assets/](assets/) – Wallpapers and notification sounds
 
 ## Requirements
 Install the following packages (Debian/Ubuntu/Kali names):
 
+See [dependencies.txt](dependencies.txt) for the complete package list.
+
+Quick install:
 ```bash
-sudo apt update && sudo apt install -y \
-	sway swaylock waybar rofi alacritty mako-notifier \
-	grim slurp wl-clipboard brightnessctl \
-	libinput-gestures libinput-tools \
-	thunar qalculate-gtk nm-connection-editor xfce4-power-manager
+sudo apt update && sudo apt install -y $(tr '\n' ' ' < dependencies.txt | sed 's/#.*//g')
 ```
 
 Notes:
@@ -26,26 +28,34 @@ Notes:
 - Gestures: ensure your user is in the `input` group: `sudo gpasswd -a "$USER" input` then log out/in.
 
 ## Install / Update
-Copy or symlink these into `~/.config`.
+Copy or symlink these into `~/.config`. An automated install script is provided:
 
-### Option A: Copy
+### Automated Install (Recommended)
 ```bash
 # From the repo root
-cp -r sway ~/.config/
-cp -r waybar ~/.config/
-cp -r rofi ~/.config/
-cp -r alacritty ~/.config/
-cp libinput-gestures.conf ~/.config/
+bash install.sh
 ```
 
-### Option B: Symlink (recommended)
+This will:
+- Link all config directories to `~/.config/`
+- Copy battery notification script to `~/.local/bin/`
+- Download notification sounds to `~/.local/share/sounds/`
+
+### Manual Install
 ```bash
 # From the repo root
 ln -s "$PWD/sway" ~/.config/sway
 ln -s "$PWD/waybar" ~/.config/waybar
 ln -s "$PWD/rofi" ~/.config/rofi
 ln -s "$PWD/alacritty" ~/.config/alacritty
-ln -s "$PWD/libinput-gestures.conf" ~/.config/libinput-gestures.conf
+ln -s "$PWD/mako" ~/.config/mako
+ln -s "$PWD/wob" ~/.config/wob
+ln -s "$PWD/gestures/libinput-gestures.conf" ~/.config/libinput-gestures.conf
+
+# Copy battery script
+mkdir -p ~/.local/bin
+cp waybar/scripts/battery_notify.sh ~/.local/bin/battery_notify.sh
+chmod +x ~/.local/bin/battery_notify.sh
 ```
 
 ### Autostart & Apply
@@ -98,7 +108,7 @@ Touchpad
 - Tap: enabled, Natural scroll: enabled, Middle emulation: enabled
 
 ## Touchpad Gestures
-From [libinput-gestures.conf](libinput-gestures.conf):
+From [gestures/libinput-gestures.conf](gestures/libinput-gestures.conf):
 
 3‑finger swipes
 - Left: Workspace prev
@@ -143,6 +153,28 @@ Note: Brightness device is set to `amdgpu_bl0` in the config; adjust as needed.
 Clipboard note
 - The binding uses `rofi -show clipboard`. If you use Greenclip, change to:
 	`rofi -modi "clipboard:greenclip print" -show clipboard` and install `greenclip`.
+
+## Battery Notifications & Mako
+### Mako Config
+Notification daemon styling at [mako/config](mako/config):
+- Default: Dark background (#1e1e2e), white text
+- Critical alerts: Red background (#b71c1c), orange border, no timeout
+- Font: JetBrainsMono Nerd Font, 10pt
+
+### Battery Monitor
+Script at [waybar/scripts/battery_notify.sh](waybar/scripts/battery_notify.sh):
+- Monitors battery status every 2 minutes (called from Sway autostart)
+- Low alert: At 30% battery capacity
+- Critical alert: At 15% battery capacity
+- Plays notification sounds and sends desktop alerts via Mako
+
+### Setup Sounds
+Notification sounds are located in [assets/sounds/](assets/sounds/). To download them, use the install script or run:
+```bash
+mkdir -p ~/.local/share/sounds
+wget -O ~/.local/share/sounds/battery-low.wav https://actions.google.com/sounds/v1/alarms/beep_short.ogg
+wget -O ~/.local/share/sounds/battery-critical.wav https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg
+```
 
 ## Troubleshooting
 - Gestures not working: ensure `groups | grep input` shows `input`. Then `libinput-gestures-setup restart`.
