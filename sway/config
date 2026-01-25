@@ -1,5 +1,4 @@
- cat  ~/.config/sway/config
-########################################
+ ########################################
 # BASIC SETUP
 ########################################
 
@@ -214,7 +213,3 @@ bindsym XF86ScreenSaver exec swaylock
 
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m "Exit Sway?" -b "Yes" "swaymsg exit"
-
-
-┌──(sai㉿kali)-[~]
-└─$
