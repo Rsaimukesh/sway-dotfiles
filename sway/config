@@ -11,31 +11,45 @@ xwayland enable
 # WALLPAPER
 ########################################
 
-output * bg $HOME/Downloads/JapaneseCity.png fill
+output * bg $HOME/Downloads/japan-background-digital-art.jpg fill
 
 
 ########################################
 # AUTOSTART
 ########################################
 
+# Notifications
 exec_always --no-startup-id mako
+exec_always --no-startup-id while true; do ~/.local/bin/battery_notify.sh; sleep 120; done
+exec_always --no-startup-id ~/.config/waybar/scripts/battery_notify.sh
+
+
+# Waybar (clean restart)
 exec_always --no-startup-id sh -c 'sleep 2; pkill waybar; waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css'
+
+# Touchpad gestures
 exec_always --no-startup-id libinput-gestures-setup start
+
+# Clipboard history (Wayland)
 exec_always --no-startup-id wl-paste --type text --watch cliphist store
 exec_always --no-startup-id wl-paste --type image --watch cliphist store
+
+# WOB (volume / brightness overlay)
+exec_always --no-startup-id mkfifo /tmp/wob || true
+exec_always --no-startup-id tail -f /tmp/wob | wob
 
 
 ########################################
 # ROFI
 ########################################
 
-# Super → App launcher (Type-5)
+# Super → App launcher (Type-5 toggle)
 bindsym --release Super_L exec sh -c 'pgrep -x rofi >/dev/null && pkill rofi || ~/.config/rofi/launchers/type-5/launcher.sh'
 
-# Win + C → Clipboard history (Rofi)
+# Win + C → Clipboard history
 bindsym $mod+c exec sh -c 'cliphist list | rofi -dmenu -p "Clipboard" -theme ~/.config/rofi/launchers/type-5/style-3.rasi | cliphist decode | wl-copy'
 
-# Super + X → Power menu
+# Win + X → Power menu
 bindsym $mod+x exec ~/.config/rofi/menus/power.sh
 
 
@@ -48,8 +62,6 @@ set $browser firefox
 
 bindsym $mod+Return exec $terminal
 bindsym $mod+b exec $browser
-
-# File manager
 bindsym $mod+f exec thunar
 
 
@@ -70,17 +82,16 @@ input type:touchpad {
 
 floating_modifier $mod
 default_border pixel 2
-
 gaps inner 10
 gaps outer 5
 
-# Focus windows
+# Focus
 bindsym $mod+Left  focus left
 bindsym $mod+Right focus right
 bindsym $mod+Up    focus up
 bindsym $mod+Down  focus down
 
-# Move windows
+# Move
 bindsym $mod+Shift+Left  move left
 bindsym $mod+Shift+Right move right
 bindsym $mod+Shift+Up    move up
@@ -97,8 +108,6 @@ bindsym $mod+e layout toggle split
 bindsym $mod+q kill
 bindsym $mod+space floating toggle
 bindsym $mod+Shift+space focus mode_toggle
-
-# Fullscreen
 bindsym $mod+Shift+f fullscreen toggle
 
 
@@ -128,7 +137,6 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
-# Move container to workspace
 bindsym $mod+Shift+1 move container to workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3
@@ -140,8 +148,8 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-# Workspace navigation (requested)
-bindsym $mod+Ctrl+Left workspace prev
+# Workspace navigation
+bindsym $mod+Ctrl+Left  workspace prev
 bindsym $mod+Ctrl+Right workspace next
 
 
@@ -152,7 +160,7 @@ bindsym $mod+Ctrl+Right workspace next
 # Print → Full screen
 bindsym Print exec grim "$HOME/Pictures/screenshot_$(date +%F_%T).png"
 
-# Win + Shift + S → Area
+# Win + Shift + S → Select area
 bindsym $mod+Shift+s exec sh -c 'grim -g "$(slurp)" "$HOME/Pictures/screenshot_$(date +%F_%T).png"'
 
 # Win + Ctrl + S → Area → clipboard
@@ -160,17 +168,35 @@ bindsym $mod+Ctrl+s exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
 
 ########################################
-# MEDIA & HARDWARE KEYS
+# MEDIA & HARDWARE KEYS (WITH ANIMATION)
 ########################################
 
-# Volume
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+# Volume + WOB animation
+bindsym XF86AudioRaiseVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ +5% && pactl get-sink-volume @DEFAULT_SINK@ | awk "{print \$5}" | tr -d "%" > /tmp/wob'
 
-# Brightness
-bindsym XF86MonBrightnessUp exec brightnessctl set +10%
-bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
+bindsym XF86AudioLowerVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ -5% && pactl get-sink-volume @DEFAULT_SINK@ | awk "{print \$5}" | tr -d "%" > /tmp/wob'
+
+bindsym XF86AudioMute exec sh -c 'pactl set-sink-mute @DEFAULT_SINK@ toggle && echo 0 > /tmp/wob'
+
+# Brightness + WOB animation
+bindsym XF86MonBrightnessUp exec sh -c 'brightnessctl set +10% && brightnessctl -m | cut -d"," -f4 | tr -d "%" > /tmp/wob'
+
+bindsym XF86MonBrightnessDown exec sh -c 'brightnessctl set 10%- && brightnessctl -m | cut -d"," -f4 | tr -d "%" > /tmp/wob'
+
+
+########################################
+# MEDIA PLAYBACK KEYS
+########################################
+
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+bindsym XF86AudioStop exec playerctl stop
+
+
+########################################
+# EXTRA HARDWARE KEYS
+########################################
 
 # Calculator
 bindsym XF86Calculator exec qalculate-gtk
@@ -185,18 +211,3 @@ bindsym XF86ScreenSaver exec swaylock
 
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m "Exit Sway?" -b "Yes" "swaymsg exit"
-
-#######################################
-# Media playback controls
-#######################################
-# Play / Pause
-bindsym XF86AudioPlay exec playerctl play-pause
-
-# Next track
-bindsym XF86AudioNext exec playerctl next
-
-# Previous track
-bindsym XF86AudioPrev exec playerctl previous
-
-# Stop (optional)
-bindsym XF86AudioStop exec playerctl stop
