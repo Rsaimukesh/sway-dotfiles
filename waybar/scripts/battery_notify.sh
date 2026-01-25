@@ -1,28 +1,41 @@
 #!/bin/bash
 
-LOW=30
-CRITICAL=15
+BAT_PATH="/sys/class/power_supply/BAT1"
+SOUND_DIR="$HOME/.local/share/sounds"
 
-BATTERY_PATH="/sys/class/power_supply/BAT0"
-STATUS=$(cat "$BATTERY_PATH/status")
-CAPACITY=$(cat "$BATTERY_PATH/capacity")
+LOW=20
+CRITICAL=10
 
-LOW_SOUND="$HOME/.local/share/sounds/battery-low.wav"
-CRITICAL_SOUND="$HOME/.local/share/sounds/battery-critical.wav"
+LOW_SOUND="$SOUND_DIR/battery-low.wav"
+CRITICAL_SOUND="$SOUND_DIR/battery-critical.wav"
 
-# Only notify when discharging
-[ "$STATUS" != "Discharging" ] && exit 0
+# ---- REQUIRED ENV FOR SWAY ----
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+export PULSE_SERVER="unix:$XDG_RUNTIME_DIR/pulse/native"
+export WAYLAND_DISPLAY="wayland-0"
+export XDG_SESSION_TYPE="wayland"
 
-STATE_FILE="/tmp/battery_notify_state"
-LAST=$(cat "$STATE_FILE" 2>/dev/null || echo 100)
+while true; do
+  CAPACITY=$(cat "$BAT_PATH/capacity")
+  STATUS=$(cat "$BAT_PATH/status")
 
-if [ "$CAPACITY" -le "$CRITICAL" ] && [ "$LAST" -gt "$CRITICAL" ]; then
-    notify-send -u critical "🔴 Battery Critical" "Battery at ${CAPACITY}%!\nPlug in NOW."
-    paplay "$CRITICAL_SOUND"
-    echo "$CAPACITY" > "$STATE_FILE"
+  echo "Battery: $CAPACITY% | $STATUS"
 
-elif [ "$CAPACITY" -le "$LOW" ] && [ "$LAST" -gt "$LOW" ]; then
-    notify-send -u normal "🟠 Battery Low" "Battery at ${CAPACITY}%"
-    paplay "$LOW_SOUND"
-    echo "$CAPACITY" > "$STATE_FILE"
-fi
+  if [[ "$STATUS" != "Charging" ]]; then
+    if [ "$CAPACITY" -le "$CRITICAL" ]; then
+      notify-send -u critical "🔋 Battery CRITICAL" "$CAPACITY% remaining"
+      sleep 0.3
+      paplay "$CRITICAL_SOUND"
+      sleep 300
+
+    elif [ "$CAPACITY" -le "$LOW" ]; then
+      notify-send -u normal "🔋 Battery LOW" "$CAPACITY% remaining"
+      sleep 0.3
+      paplay "$LOW_SOUND"
+      sleep 300
+    fi
+  fi
+
+  sleep 60
+done
