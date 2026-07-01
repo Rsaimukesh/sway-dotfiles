@@ -61,13 +61,12 @@ if [ -n "${PKG_MANAGER:-}" ]; then
 
         if [ "$PKG_MANAGER" = "apt" ]; then
             sudo apt update
-            # Install all packages from dependencies.txt (skip comments/empty lines)
+            PKGS=""
             while IFS= read -r pkg; do
                 [ -z "$pkg" ] && continue
                 [[ "$pkg" =~ ^# ]] && continue
                 PKGS="$PKGS $pkg"
             done < "$REPO_DIR/dependencies.txt"
-            # Add extras not in deps.txt
             PKGS="$PKGS playerctl foot blueman pavucontrol curl wget unzip"
             sudo apt install -y $PKGS
         elif [ "$PKG_MANAGER" = "pacman" ]; then
