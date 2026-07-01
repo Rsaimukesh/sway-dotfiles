@@ -10,7 +10,7 @@ xwayland enable
 # WALLPAPER
 ########################################
 
-output * bg $HOME/Pictures/wallpaper fill
+output * bg /home/sai/Pictures/wallpaper fill
 
 ########################################
 # AUTOSTART
