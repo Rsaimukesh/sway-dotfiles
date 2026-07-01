@@ -28,18 +28,30 @@ Notes:
 - Gestures: ensure your user is in the `input` group: `sudo gpasswd -a "$USER" input` then log out/in.
 
 ## Install / Update
-Copy or symlink these into `~/.config`. An automated install script is provided:
+Copy or symlink these into `~/.config`. Automated scripts are provided:
 
-### Automated Install (Recommended)
+### Full Automated Setup (Recommended for new installs)
 ```bash
 # From the repo root
-bash install.sh
+bash setup.sh
 ```
 
 This will:
-- Link all config directories to `~/.config/`
+- Install required system packages (with confirmation)
+- Install JetBrainsMono Nerd Font (with confirmation)
+- Back up existing configs, link all config directories to `~/.config/`
 - Copy battery notification script to `~/.local/bin/`
+- Set up wallpaper from `assets/wallpapers/` (interactive selection)
+- Update sway config wallpaper path automatically
 - Download notification sounds to `~/.local/share/sounds/`
+- Add user to `input` group for gestures
+- Configure and start libinput-gestures
+
+### Quick Install (configs only)
+```bash
+bash install.sh
+```
+Links configs without dependency management or wallpaper setup.
 
 ### Manual Install
 ```bash
@@ -59,7 +71,7 @@ chmod +x ~/.local/bin/battery_notify.sh
 ```
 
 ### Autostart & Apply
-- Sway autostarts Waybar, Mako, and Gestures (see [sway/config](sway/config#L15-L23)).
+- Sway autostarts Waybar, Mako, and Gestures (see [sway/config](sway/config)).
 - Reload Sway after changes: `swaymsg reload`.
 - If needed, restart Waybar: `pkill waybar || true && waybar &`.
 - Refresh gestures: `libinput-gestures-setup restart`.
