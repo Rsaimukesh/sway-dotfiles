@@ -151,12 +151,11 @@ select WP in "${AVAILABLE_WALLPAPERS[@]}" "Skip"; do
         break
     fi
     if [ -n "$WP" ]; then
-        WP_BASENAME=$(basename "$WP")
-        cp "$WP" "$WALLPAPER_DIR/$WP_BASENAME"
-        log "Wallpaper copied to $WALLPAPER_DIR/$WP_BASENAME"
+        cp "$WP" "$WALLPAPER_DIR/wallpaper"
+        log "Wallpaper copied to $WALLPAPER_DIR/wallpaper"
 
         # Update sway config wallpaper path
-        sed -i "s|^output \* bg .*|output * bg $WALLPAPER_DIR/$WP_BASENAME fill|" "$SWAY_CONFIG"
+        sed -i "s|^output \* bg .*|output * bg $WALLPAPER_DIR/wallpaper fill|" "$SWAY_CONFIG"
         log "Sway config updated with wallpaper path."
         break
     fi

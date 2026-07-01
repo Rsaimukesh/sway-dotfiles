@@ -1,0 +1,14 @@
+# Personal / machine-specific files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Wallpapers and images are tracked in assets/, but personal copies are not
+Pictures/
+Downloads/
+
+# Editor dirs
+.vscode/
+.idea/

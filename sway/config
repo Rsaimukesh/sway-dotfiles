@@ -10,7 +10,7 @@ xwayland enable
 # WALLPAPER
 ########################################
 
-output * bg /home/sai/Pictures/8.png fill
+output * bg $HOME/Pictures/wallpaper fill
 
 ########################################
 # AUTOSTART
@@ -21,11 +21,6 @@ exec_always systemctl --user restart xdg-desktop-portal
 exec_always --no-startup-id libinput-gestures
 exec_always --no-startup-id mako
 
-# Notifications
-exec_always --no-startup-id mako
-exec_always --no-startup-id while true; do ~/.local/bin/battery_notify.sh; sleep 120; done
-
-# Battery notification daemon
 exec_always --no-startup-id ~/.config/waybar/scripts/battery_notify.sh
 
 # Waybar
@@ -222,14 +217,6 @@ bindsym $mod+F2 exec ~/.config/sway/normal-mode.sh
 
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m "Exit Sway?" -b "Yes" "swaymsg exit"
-bindsym $mod+l exec swaylock -i ~/Downloads/Rick\ and\ Morty.jpeg
-
-exec waybar
-
-########################################
-# BATTERY NOTIFICATION DAEMON
-########################################
-
-exec_always --no-startup-id pkill -f battery_notify.sh; sleep 1; ~/.config/waybar/scripts/battery_notify.sh &
+bindsym $mod+l exec swaylock -i $HOME/Pictures/lockscreen
 
 
