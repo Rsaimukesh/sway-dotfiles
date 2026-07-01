@@ -1,12 +1,12 @@
 # sway-config
 
-Personal Wayland setup for Sway + Waybar with Rofi launchers/menus, Alacritty, and multi-finger touchpad gestures via libinput-gestures.
+Personal Wayland setup for Sway + Waybar with Rofi launchers/menus, Kitty, and multi-finger touchpad gestures via libinput-gestures.
 
 ## Included
 - [sway/](sway/) – Sway WM config, keybindings, autostart
 - [waybar/](waybar/) – Waybar modules, styles, and scripts (including battery notifications)
-- [rofi/](rofi/) – Rofi app launcher (Type-5) and menu scripts
-- [alacritty/](alacritty/) – Alacritty terminal config
+- [rofi/](rofi/) – Rofi app launcher (Type-7), powermenu (Type-6), applets, and scripts
+- [kitty/](kitty/) – Kitty terminal config
 - [mako/](mako/) – Mako notification daemon config
 - [wob/](wob/) – WOB (overlay bar) config for volume/brightness
 - [gestures/](gestures/) – Touchpad gestures (libinput-gestures)
@@ -47,7 +47,7 @@ This will:
 ln -s "$PWD/sway" ~/.config/sway
 ln -s "$PWD/waybar" ~/.config/waybar
 ln -s "$PWD/rofi" ~/.config/rofi
-ln -s "$PWD/alacritty" ~/.config/alacritty
+ln -s "$PWD/kitty" ~/.config/kitty
 ln -s "$PWD/mako" ~/.config/mako
 ln -s "$PWD/wob" ~/.config/wob
 ln -s "$PWD/gestures/libinput-gestures.conf" ~/.config/libinput-gestures.conf
@@ -68,12 +68,17 @@ chmod +x ~/.local/bin/battery_notify.sh
 From [sway/config](sway/config):
 
 Applications
-- Super (release): App launcher (Rofi Type-5)
-- Super + Enter: Terminal (Alacritty)
+- Super (release): App launcher (Rofi Type-7)
+- Super + Enter: Terminal (Kitty)
 - Super + B: Browser (Firefox)
 - Super + F: File manager (Thunar)
 - Super + C: Clipboard menu (Rofi)
-- Super + X: Power menu (Rofi)
+- Super + X: Power menu (Rofi Type-6)
+- Super + L: Lock screen (swaylock)
+
+CTF Mode
+- Super + F1: CTF lean mode (kills services, minimal waybar, foot terminal)
+- Super + F2: Restore normal mode (all services, kitty, full waybar)
 
 Window management
 - Focus: Super + Arrows (←/→/↑/↓)
@@ -95,14 +100,17 @@ Screenshots
 - Super + Ctrl + S: Area to clipboard (wl-copy)
 
 Media & Hardware Keys
-- Volume: XF86Audio{Raise/Lower/MonoMute} → `pactl`
+- Volume: XF86Audio{Raise/Lower/Mute} → `pactl`
 - Brightness: XF86MonBrightness{Up/Down} → `brightnessctl`
+- Mic Mute: XF86AudioMicMute → `pactl set-source-mute`
+- Playback: XF86Audio{Play/Pause/Next/Prev/Stop} → `playerctl`
 - Calculator: XF86Calculator → `qalculate-gtk`
 - Lock: XF86ScreenSaver → `swaylock`
 
 Session
 - Super + Shift + R: Reload Sway
 - Super + Shift + E: Exit Sway (confirmation dialog)
+- Super + L: Lock screen
 
 Touchpad
 - Tap: enabled, Natural scroll: enabled, Middle emulation: enabled
@@ -111,18 +119,10 @@ Touchpad
 From [gestures/libinput-gestures.conf](gestures/libinput-gestures.conf):
 
 3‑finger swipes
-- Left: Workspace prev
-- Right: Workspace next
-- Up: Open Rofi (drun)
-- Down: Focus parent
-
-4‑finger swipes
-- Up: Fullscreen toggle
-- Down: Power menu (Rofi)
-
-Pinch (2 fingers)
-- Out: Fullscreen toggle
-- In: Close focused window (kill)
+- Left: Workspace next
+- Right: Workspace prev
+- Up: Workspace prev
+- Down: Workspace next
 
 Gesture service tips
 - Start on login: this config runs `libinput-gestures-setup start` from Sway autostart.
@@ -133,25 +133,29 @@ Gesture service tips
 Config at [waybar/config](waybar/config) and [waybar/style.css](waybar/style.css).
 
 Modules
-- Left: Appmenu (opens Rofi), Workspaces
-- Center: Clock (click to toggle date/time display)
-- Right: Brightness, Volume, Network, CPU, Memory, Battery, Power
+- Left: Appmenu, Workspaces, Sway Mode, Media (playerctl)
+- Center: Clock (with calendar on click)
+- Right: Weather, Network, Bluetooth, Volume, Brightness, CPU, Memory, Disk, Battery, Power
 
 Clicks (custom modules)
-- Brightness: opens [rofi/menus/brightness.sh](rofi/menus/brightness.sh)
-- Volume: opens [rofi/menus/volume.sh](rofi/menus/volume.sh)
-- Battery: opens [rofi/menus/battery.sh](rofi/menus/battery.sh)
-- Power: opens [rofi/menus/power.sh](rofi/menus/power.sh)
+- Weather: Open wttr.in in browser
+- Network: Open nm-connection-editor
+- Bluetooth: Open blueman-manager
+- Volume: Toggle mute (left-click), pavucontrol (right-click)
+- Brightness: Scroll to adjust
+- CPU/Memory: Open btop
+- Power: Power menu (Rofi)
 
 Note: Brightness device is set to `amdgpu_bl0` in the config; adjust as needed.
 
 ## Rofi Menus & Launcher
-- App launcher: [rofi/launchers/type-5/launcher.sh](rofi/launchers/type-5/launcher.sh) (theme switch via `theme` var)
-- Menus: [power](rofi/menus/power.sh), [brightness](rofi/menus/brightness.sh), [volume](rofi/menus/volume.sh), [battery](rofi/menus/battery.sh)
-- Image assets used by some themes are under [rofi/images/](rofi/images/)
+- App launcher: [rofi/launchers/type-7/launcher.sh](rofi/launchers/type-7/launcher.sh) (style-5 theme)
+- Power menu: [rofi/powermenu/type-6/powermenu.sh](rofi/powermenu/type-6/powermenu.sh) (with live system stats)
+- Scripts/shortcuts: [rofi/scripts/](rofi/scripts/) — launcher and powermenu type shortcuts
+- Image assets used by themes are under [rofi/images/](rofi/images/)
 
 Clipboard note
-- The binding uses `rofi -show clipboard`. If you use Greenclip, change to:
+- The binding uses `rofi -dmenu` with cliphist. If you use Greenclip, change to:
 	`rofi -modi "clipboard:greenclip print" -show clipboard` and install `greenclip`.
 
 ## Battery Notifications & Mako
@@ -163,10 +167,12 @@ Notification daemon styling at [mako/config](mako/config):
 
 ### Battery Monitor
 Script at [waybar/scripts/battery_notify.sh](waybar/scripts/battery_notify.sh):
-- Monitors battery status every 2 minutes (called from Sway autostart)
+- Monitors battery status every 60 seconds (called from Sway autostart)
 - Low alert: At 30% battery capacity
-- Critical alert: At 15% battery capacity
+- Critical alert: At 10% battery capacity
+- Full charge alert: At 100% (when plugged in)
 - Plays notification sounds and sends desktop alerts via Mako
+- Debounce logic prevents repeat notifications until state changes
 
 ### Setup Sounds
 Notification sounds are located in [assets/sounds/](assets/sounds/). To download them, use the install script or run:
@@ -180,10 +186,17 @@ wget -O ~/.local/share/sounds/battery-critical.wav https://actions.google.com/so
 - Gestures not working: ensure `groups | grep input` shows `input`. Then `libinput-gestures-setup restart`.
 - Waybar not showing data: run `waybar -l debug` to inspect. Verify executables like `brightnessctl`, `pactl` exist.
 - Screenshots: ensure `grim`, `slurp`, and `wl-clipboard` are installed.
-- Fonts/icons missing: verify Nerd Font is installed and selected in Alacritty and Waybar icons display.
+- Fonts/icons missing: verify Nerd Font is installed and selected in Kitty and Waybar icons display.
+
+## CTF Mode
+Bindings `Mod+F1` / `Mod+F2` toggle between CTF lean mode and normal desktop:
+- **CTF Mode** kills Mako, WOB, cliphist, Waybar; strips gaps/borders; launches minimal Waybar; swaps Kitty → Foot terminal.
+- **Normal Mode** restores all services, gaps, full Waybar, and Kitty.
+
+See [sway/ctf-mode.sh](sway/ctf-mode.sh) and [sway/normal-mode.sh](sway/normal-mode.sh).
 
 ## Contributing / Personalization
 - Tweak paths and device names in [sway/config](sway/config) and [waybar/config](waybar/config).
-- Edit Rofi theme via `theme` in [rofi/launchers/type-5/launcher.sh](rofi/launchers/type-5/launcher.sh).
-- Adjust images in [rofi/images/](rofi/images/) or update `.rasi` files under [rofi/launchers/type-5](rofi/launchers/type-5).
+- Edit Rofi theme in [rofi/launchers/type-7/launcher.sh](rofi/launchers/type-7/launcher.sh).
+- Adjust images in [rofi/images/](rofi/images/) or update `.rasi` files under [rofi/launchers/](rofi/launchers/).
 

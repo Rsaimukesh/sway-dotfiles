@@ -5,7 +5,7 @@ sway
 swaylock
 waybar
 rofi
-alacritty
+kitty
 mako-notifier
 
 # Screenshots & clipboard

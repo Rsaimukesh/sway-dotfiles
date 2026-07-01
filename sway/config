@@ -1,4 +1,4 @@
- ########################################
+########################################
 # BASIC SETUP
 ########################################
 
@@ -6,17 +6,20 @@ set $mod Mod4
 font pango:JetBrainsMono Nerd Font 10
 xwayland enable
 
-
 ########################################
 # WALLPAPER
 ########################################
 
-output * bg $HOME/Downloads/japan-background-digital-art.jpg fill
-
+output * bg /home/sai/Pictures/8.png fill
 
 ########################################
 # AUTOSTART
 ########################################
+
+exec_always dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec_always systemctl --user restart xdg-desktop-portal
+exec_always --no-startup-id libinput-gestures
+exec_always --no-startup-id mako
 
 # Notifications
 exec_always --no-startup-id mako
@@ -25,50 +28,43 @@ exec_always --no-startup-id while true; do ~/.local/bin/battery_notify.sh; sleep
 # Battery notification daemon
 exec_always --no-startup-id ~/.config/waybar/scripts/battery_notify.sh
 
-
-# Waybar (clean restart)
+# Waybar
 exec_always --no-startup-id sh -c 'sleep 2; pkill waybar; waybar -c ~/.config/waybar/config -s ~/.config/waybar/style.css'
-
-# Touchpad gestures
-exec_always --no-startup-id libinput-gestures-setup start
 
 # Clipboard history (Wayland)
 exec_always --no-startup-id wl-paste --type text --watch cliphist store
 exec_always --no-startup-id wl-paste --type image --watch cliphist store
 
-# WOB (volume / brightness overlay)
+# WOB
 exec_always --no-startup-id mkfifo /tmp/wob || true
 exec_always --no-startup-id tail -f /tmp/wob | wob
 
-
 ########################################
-# ROFI
+# ROFI (ALL STYLE-1 UNIFIED)
 ########################################
 
-# Super → App launcher (Type-5 toggle)
-bindsym --release Super_L exec sh -c 'pgrep -x rofi >/dev/null && pkill rofi || ~/.config/rofi/launchers/type-5/launcher.sh'
+# Launcher (matches power menu style-1)
+bindsym --release Super_L exec env GDK_BACKEND=x11 ~/.config/rofi/launchers/type-7/launcher.sh --style 1
 
-# Win + C → Clipboard history
-bindsym $mod+c exec sh -c 'cliphist list | rofi -dmenu -p "Clipboard" -theme ~/.config/rofi/launchers/type-5/style-3.rasi | cliphist decode | wl-copy'
+# Clipboard (same style-1)
+bindsym $mod+c exec sh -c 'cliphist list | rofi -dmenu -theme ~/.config/rofi/launchers/type-7/style-5.rasi | cliphist decode | wl-copy'
 
-# Win + X → Power menu
-bindsym $mod+x exec ~/.config/rofi/menus/power.sh
-
+# Power menu (already style-1)
+bindsym $mod+x exec env GDK_BACKEND=x11 ~/.config/rofi/powermenu/type-6/powermenu.sh
 
 ########################################
 # APPLICATIONS
 ########################################
 
-set $terminal alacritty
+set $terminal kitty
 set $browser firefox
 
 bindsym $mod+Return exec $terminal
 bindsym $mod+b exec $browser
 bindsym $mod+f exec thunar
 
-
 ########################################
-# INPUT (TOUCHPAD)
+# INPUT
 ########################################
 
 input type:touchpad {
@@ -76,7 +72,6 @@ input type:touchpad {
     natural_scroll enabled
     middle_emulation enabled
 }
-
 
 ########################################
 # WINDOW MANAGEMENT
@@ -87,31 +82,26 @@ default_border pixel 2
 gaps inner 10
 gaps outer 5
 
-# Focus
 bindsym $mod+Left  focus left
 bindsym $mod+Right focus right
 bindsym $mod+Up    focus up
 bindsym $mod+Down  focus down
 
-# Move
 bindsym $mod+Shift+Left  move left
 bindsym $mod+Shift+Right move right
 bindsym $mod+Shift+Up    move up
 bindsym $mod+Shift+Down  move down
 
-# Layouts
 bindsym $mod+h split h
 bindsym $mod+v split v
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 
-# Window actions
 bindsym $mod+q kill
 bindsym $mod+space floating toggle
 bindsym $mod+Shift+space focus mode_toggle
 bindsym $mod+Shift+f fullscreen toggle
-
 
 ########################################
 # WORKSPACES
@@ -150,66 +140,96 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-# Workspace navigation
 bindsym $mod+Ctrl+Left  workspace prev
 bindsym $mod+Ctrl+Right workspace next
+
+
+########################################
+# NUMPAD WORKSPACE SWITCHING
+########################################
+
+bindsym $mod+KP_1 workspace $ws1
+bindsym $mod+KP_2 workspace $ws2
+bindsym $mod+KP_3 workspace $ws3
+bindsym $mod+KP_4 workspace $ws4
+bindsym $mod+KP_5 workspace $ws5
+bindsym $mod+KP_6 workspace $ws6
+bindsym $mod+KP_7 workspace $ws7
+bindsym $mod+KP_8 workspace $ws8
+bindsym $mod+KP_9 workspace $ws9
+bindsym $mod+KP_0 workspace $ws10
+
+bindsym $mod+Shift+KP_1 move container to workspace $ws1
+bindsym $mod+Shift+KP_2 move container to workspace $ws2
+bindsym $mod+Shift+KP_3 move container to workspace $ws3
+bindsym $mod+Shift+KP_4 move container to workspace $ws4
+bindsym $mod+Shift+KP_5 move container to workspace $ws5
+bindsym $mod+Shift+KP_6 move container to workspace $ws6
+bindsym $mod+Shift+KP_7 move container to workspace $ws7
+bindsym $mod+Shift+KP_8 move container to workspace $ws8
+bindsym $mod+Shift+KP_9 move container to workspace $ws9
+bindsym $mod+Shift+KP_0 move container to workspace $ws10
+
+
+
+########################################
+# MEDIA KEYS - PLAYBACK & MIC
+########################################
+
+# Playback control (requires playerctl)
+bindsym XF86AudioPlay  exec playerctl play-pause
+bindsym XF86AudioPause exec playerctl play-pause
+bindsym XF86AudioNext  exec playerctl next
+bindsym XF86AudioPrev  exec playerctl previous
+bindsym XF86AudioStop  exec playerctl stop
+
+# Mic mute toggle
+bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
 
 
 ########################################
 # SCREENSHOTS
 ########################################
 
-# Print → Full screen
 bindsym Print exec grim "$HOME/Pictures/screenshot_$(date +%F_%T).png"
-
-# Win + Shift + S → Select area
 bindsym $mod+Shift+s exec sh -c 'grim -g "$(slurp)" "$HOME/Pictures/screenshot_$(date +%F_%T).png"'
-
-# Win + Ctrl + S → Area → clipboard
 bindsym $mod+Ctrl+s exec sh -c 'grim -g "$(slurp)" - | wl-copy'
 
-
 ########################################
-# MEDIA & HARDWARE KEYS (WITH ANIMATION)
-########################################
-
-# Volume + WOB animation
-bindsym XF86AudioRaiseVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ +5% && pactl get-sink-volume @DEFAULT_SINK@ | awk "{print \$5}" | tr -d "%" > /tmp/wob'
-
-bindsym XF86AudioLowerVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ -5% && pactl get-sink-volume @DEFAULT_SINK@ | awk "{print \$5}" | tr -d "%" > /tmp/wob'
-
-bindsym XF86AudioMute exec sh -c 'pactl set-sink-mute @DEFAULT_SINK@ toggle && echo 0 > /tmp/wob'
-
-# Brightness + WOB animation
-bindsym XF86MonBrightnessUp exec sh -c 'brightnessctl set +10% && brightnessctl -m | cut -d"," -f4 | tr -d "%" > /tmp/wob'
-
-bindsym XF86MonBrightnessDown exec sh -c 'brightnessctl set 10%- && brightnessctl -m | cut -d"," -f4 | tr -d "%" > /tmp/wob'
-
-
-########################################
-# MEDIA PLAYBACK KEYS
+# MEDIA KEYS
 ########################################
 
-bindsym XF86AudioPlay exec playerctl play-pause
-bindsym XF86AudioNext exec playerctl next
-bindsym XF86AudioPrev exec playerctl previous
-bindsym XF86AudioStop exec playerctl stop
+bindsym XF86AudioRaiseVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ +5%'
+bindsym XF86AudioLowerVolume exec sh -c 'pactl set-sink-volume @DEFAULT_SINK@ -5%'
+bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
 
-
-########################################
-# EXTRA HARDWARE KEYS
-########################################
-
-# Calculator
-bindsym XF86Calculator exec qalculate-gtk
-
-# Lock screen
-bindsym XF86ScreenSaver exec swaylock
-
+bindsym XF86MonBrightnessUp exec brightnessctl set +10%
+bindsym XF86MonBrightnessDown exec brightnessctl set 10%-
 
 ########################################
-# SESSION CONTROL
+# CTF MODE
+########################################
+
+# Mod+F1 → CTF lean mode (kills heavy services, minimal waybar, foot terminal)
+bindsym $mod+F1 exec ~/.config/sway/ctf-mode.sh
+
+# Mod+F2 → Restore normal mode (restarts all services, alacritty, full waybar)
+bindsym $mod+F2 exec ~/.config/sway/normal-mode.sh
+
+########################################
+# SESSION
 ########################################
 
 bindsym $mod+Shift+r reload
 bindsym $mod+Shift+e exec swaynag -t warning -m "Exit Sway?" -b "Yes" "swaymsg exit"
+bindsym $mod+l exec swaylock -i ~/Downloads/Rick\ and\ Morty.jpeg
+
+exec waybar
+
+########################################
+# BATTERY NOTIFICATION DAEMON
+########################################
+
+exec_always --no-startup-id pkill -f battery_notify.sh; sleep 1; ~/.config/waybar/scripts/battery_notify.sh &
+
+

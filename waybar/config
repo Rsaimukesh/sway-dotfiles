@@ -2,11 +2,13 @@
   "layer": "top",
   "position": "top",
   "exclusive": true,
-  "height": 36,
+  "height": 40,
 
   "modules-left": [
     "custom/appmenu",
-    "sway/workspaces"
+    "sway/workspaces",
+    "sway/mode",
+    "custom/media"
   ],
 
   "modules-center": [
@@ -14,85 +16,165 @@
   ],
 
   "modules-right": [
-    "custom/brightness",
-    "custom/volume",
+    "custom/weather",
     "network",
+    "bluetooth",
+    "pulseaudio",
+    "custom/brightness",
     "cpu",
     "memory",
-    "custom/battery",
+    "disk",
+    "battery",
     "custom/power"
   ],
 
+  "custom/appmenu": {
+    "format": "Apps",
+    "tooltip": "Launch applications",
+    "on-click": "~/.config/rofi/launchers/type-5/launcher.sh"
+  },
+
   "sway/workspaces": {
-    "disable-scroll": true,
+    "disable-scroll": false,
+    "all-outputs": false,
     "format": "{name}"
+  },
+
+  "sway/mode": {
+    "format": "<b>{}</b>",
+    "tooltip": false
+  },
+
+  "custom/media": {
+    "exec": "~/.config/waybar/scripts/media.sh",
+    "interval": 2,
+    "format": "{}",
+    "max-length": 45,
+    "on-click": "playerctl play-pause",
+    "on-scroll-up": "playerctl next",
+    "on-scroll-down": "playerctl previous",
+    "tooltip": true
   },
 
   "clock": {
     "interval": 1,
-    "format": " {:%H:%M:%S}",
-    "format-alt": " {:%d-%m-%Y}",
-    "tooltip": false
+    "format": "{:%H:%M:%S}",
+    "format-alt": "{:%A, %d %B %Y}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "right",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#cba6f7'><b>{}</b></span>",
+        "days": "<span color='#cdd6f4'>{}</span>",
+        "weeks": "<span color='#89dceb'><b>W{}</b></span>",
+        "weekdays": "<span color='#a6e3a1'><b>{}</b></span>",
+        "today": "<span color='#f38ba8'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+
+  "custom/weather": {
+    "exec": "~/.config/waybar/scripts/weather.sh",
+    "interval": 1800,
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "on-click": "xdg-open https://wttr.in"
+  },
+
+  "network": {
+    "interval": 3,
+    "format-wifi": "WiFi {signalStrength}%",
+    "format-ethernet": "ETH {ipaddr}",
+    "format-disconnected": "No Net",
+    "tooltip-format-wifi": "SSID: {essid}\nIP: {ipaddr}\nSignal: {signalStrength}%",
+    "tooltip-format-disconnected": "Disconnected",
+    "on-click": "nm-connection-editor"
+  },
+
+  "bluetooth": {
+    "format": "BT {status}",
+    "format-connected": "BT {device_alias}",
+    "format-disabled": "BT Off",
+    "on-click": "blueman-manager"
+  },
+
+  "pulseaudio": {
+    "scroll-step": 5,
+    "format": "VOL {volume}%",
+    "format-muted": "MUTED",
+    "tooltip-format": "Sink: {desc}\nVolume: {volume}%",
+    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click-right": "pavucontrol",
+    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +5%",
+    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -5%"
+  },
+
+  "custom/brightness": {
+    "exec": "~/.config/waybar/scripts/brightness.sh",
+    "interval": 1,
+    "format": "BRI {}",
+    "tooltip": false,
+    "on-scroll-up": "brightnessctl set +5%",
+    "on-scroll-down": "brightnessctl set 5%-"
   },
 
   "cpu": {
     "interval": 2,
-    "format": " {usage}%",
-    "tooltip": true
+    "format": "CPU {usage}%",
+    "tooltip-format": "CPU: {usage}%\nFreq: {avg_frequency} GHz",
+    "on-click": "foot -e btop",
+    "states": {
+      "warning": 70,
+      "critical": 90
+    }
   },
 
   "memory": {
     "interval": 5,
-    "format": " {percentage}%",
-    "tooltip": true
+    "format": "RAM {used:0.1f}G",
+    "tooltip-format": "RAM: {used:0.1f} / {total:0.1f} GiB ({percentage}%)",
+    "on-click": "foot -e btop",
+    "states": {
+      "warning": 70,
+      "critical": 90
+    }
   },
 
-  "network": {
-    "interval": 5,
-    "format-wifi": " {signalStrength}%",
-    "format-ethernet": "󰈀",
-    "format-disconnected": "",
-    "tooltip": true,
-    "tooltip-format": "{ifname}\nIP: {ipaddr}\nSignal: {signalStrength}%",
-    "on-click": "nm-connection-editor"
-  },
-
-  "custom/battery": {
-    "exec": "cat /sys/class/power_supply/BAT*/capacity 2>/dev/null | head -n1",
+  "disk": {
     "interval": 30,
-    "format": " {}%",
-    "tooltip": "Battery",
-    "on-click": "~/.config/rofi/menus/battery.sh"
+    "format": "DISK {percentage_used}%",
+    "path": "/",
+    "tooltip-format": "Used: {used} / {total}\nFree: {free}",
+    "states": {
+      "warning": 75,
+      "critical": 90
+    }
   },
 
-
-"custom/appmenu": {
-  "format": "Application",
-  "tooltip": "Applications",
-  "on-click": "~/.config/rofi/launchers/type-5/launcher.sh"
-},
-
-
-
-"custom/brightness": {
-  "exec": "brightnessctl -m -d amdgpu_bl0 | cut -d',' -f4",
-  "interval": 1,
-  "format": " {}",
-  "tooltip": "Brightness",
-  "on-click": "~/.config/rofi/menus/brightness.sh"
-},
-
-  "custom/volume": {
-    "exec": "pactl get-sink-volume @DEFAULT_SINK@ | grep -o '[0-9]\\+%' | head -n1",
-    "interval": 1,
-    "format": " {}",
-    "tooltip": "Volume",
-    "on-click": "~/.config/rofi/menus/volume.sh"
+  "battery": {
+    "bat": "BAT1",
+    "adapter": "ACAD",
+    "interval": 5,
+    "states": {
+      "warning": 30,
+      "critical": 10
+    },
+"format": "BAT {capacity}%",
+"format-charging": "CHR {capacity}%"
   },
 
   "custom/power": {
-    "format": "⏻",
+    "format": "PWR",
     "tooltip": "Power Menu",
-    "on-click": "~/.config/rofi/menus/power.sh"
+    "on-click": "bash ~/.config/rofi/menus/power.sh"
   }
 }
