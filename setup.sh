@@ -68,7 +68,17 @@ if [ -n "${PKG_MANAGER:-}" ]; then
                 PKGS="$PKGS $pkg"
             done < "$REPO_DIR/dependencies.txt"
             PKGS="$PKGS playerctl foot blueman pavucontrol curl wget unzip"
-            sudo apt install -y $PKGS
+
+            # Filter out unavailable packages, then install in one shot
+            AVAILABLE=""
+            for pkg in $PKGS; do
+                if apt-cache show "$pkg" &>/dev/null; then
+                    AVAILABLE="$AVAILABLE $pkg"
+                else
+                    warn "Package '$pkg' not found in repos — skipping"
+                fi
+            done
+            [ -n "$AVAILABLE" ] && sudo apt install -y $AVAILABLE
         elif [ "$PKG_MANAGER" = "pacman" ]; then
             sudo pacman -S --noconfirm sway swaylock waybar rofi kitty mako grim slurp wl-clipboard brightnessctl network-manager-applet qalculate-gtk thunar libinput-gestures libinput playerctl foot blueman pavucontrol curl wget unzip
         elif [ "$PKG_MANAGER" = "dnf" ]; then
