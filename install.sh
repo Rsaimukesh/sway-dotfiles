@@ -36,10 +36,21 @@ mkdir -p "$LOCAL_SHARE/sounds"
 wget -O "$LOCAL_SHARE/sounds/battery-low.wav" https://actions.google.com/sounds/v1/alarms/beep_short.ogg 2>/dev/null || echo "⚠️  Warning: Could not download battery-low.wav"
 wget -O "$LOCAL_SHARE/sounds/battery-critical.wav" https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg 2>/dev/null || echo "⚠️  Warning: Could not download battery-critical.wav"
 
+# Copy default wallpaper if none exists
+if [ ! -f "$HOME/Pictures/wallpaper" ]; then
+  mkdir -p "$HOME/Pictures"
+  DEFAULT_WP=$(ls "$REPO_DIR/assets/wallpapers"/* 2>/dev/null | head -n1)
+  if [ -n "$DEFAULT_WP" ]; then
+    cp "$DEFAULT_WP" "$HOME/Pictures/wallpaper"
+    echo "🖼️  Default wallpaper copied to ~/Pictures/wallpaper"
+  fi
+fi
+
 echo "✅ Installation complete!"
 echo ""
 echo "Next steps:"
 echo "1. Review and adjust configs in ~/.config/sway, ~/.config/waybar, etc."
-echo "2. Reload Sway: swaymsg reload"
-echo "3. Restart Waybar: pkill waybar && waybar &"
+echo "2. Set a lock screen image: cp ~/path/to/image ~/Pictures/lockscreen"
+echo "3. Reload Sway: swaymsg reload"
+echo "4. Restart Waybar: pkill waybar && waybar &"
 echo ""

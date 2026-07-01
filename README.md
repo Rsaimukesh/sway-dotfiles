@@ -107,7 +107,7 @@ Modules: **Left:** App menu · Workspaces · Sway mode · Now playing
 
 Click actions: Weather → wttr.in, Network → nm-connection-editor, Bluetooth → blueman-manager, Volume → toggle mute / pavucontrol, CPU/Memory → btop, Power → Rofi powermenu.
 
-Brightness device defaults to `amdgpu_bl0`. Adjust in `waybar/config` and `waybar/scripts/brightness.sh` if needed.
+Brightness auto-detects the backlight device. No manual configuration needed.
 
 ## Touchpad Gestures
 

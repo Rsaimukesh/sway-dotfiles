@@ -2,7 +2,8 @@
 # ~/.config/waybar/scripts/battery_notify.sh
 # Enhanced battery monitor with low/critical/full charge alerts
 
-BAT_PATH="/sys/class/power_supply/BAT1"
+BAT_PATH=$(ls -d /sys/class/power_supply/BAT* 2>/dev/null | head -n1)
+[ -z "$BAT_PATH" ] && BAT_PATH="/sys/class/power_supply/BAT1"
 SOUND_DIR="$HOME/.local/share/sounds"
 
 LOW=30

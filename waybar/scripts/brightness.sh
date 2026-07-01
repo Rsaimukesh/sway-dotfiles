@@ -2,11 +2,7 @@
 # ~/.config/waybar/scripts/brightness.sh
 # Shows brightness with tiered icon
 
-RAW=$(brightnessctl -m -d amdgpu_bl0 2>/dev/null | cut -d',' -f4)
-# Fallback to any backlight device
-if [ -z "$RAW" ]; then
-  RAW=$(brightnessctl -m | cut -d',' -f4)
-fi
+RAW=$(brightnessctl -m 2>/dev/null | cut -d',' -f4)
 
 LEVEL=${RAW//%/}
 

@@ -168,8 +168,8 @@
       "warning": 30,
       "critical": 10
     },
-"format": "BAT {capacity}%",
-"format-charging": "CHR {capacity}%"
+    "format": "BAT {capacity}%",
+    "format-charging": "CHR {capacity}%"
   },
 
   "custom/power": {

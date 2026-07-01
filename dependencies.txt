@@ -1,5 +1,5 @@
 # Packages required for this setup (Debian/Ubuntu/Kali)
-# Install with: sudo apt install -y $(tr '\n' ' ' < requirements.txt | sed 's/#.*//g')
+# Install with: sudo apt install -y $(tr '\n' ' ' < dependencies.txt | sed 's/#.*//g')
 
 sway
 swaylock
