@@ -1,214 +1,154 @@
-# sway-config
+# sway-dotfiles
 
-Personal Wayland setup for Sway + Waybar with Rofi launchers/menus, Kitty, and multi-finger touchpad gestures via libinput-gestures.
+Personal Wayland desktop configuration — Sway, Waybar, Rofi, Kitty, Mako, WOB.
 
-## Included
-- [sway/](sway/) – Sway WM config, keybindings, autostart
-- [waybar/](waybar/) – Waybar modules, styles, and scripts (including battery notifications)
-- [rofi/](rofi/) – Rofi app launcher (Type-7), powermenu (Type-6), applets, and scripts
-- [kitty/](kitty/) – Kitty terminal config
-- [mako/](mako/) – Mako notification daemon config
-- [wob/](wob/) – WOB (overlay bar) config for volume/brightness
-- [gestures/](gestures/) – Touchpad gestures (libinput-gestures)
-- [assets/](assets/) – Wallpapers and notification sounds
+## Overview
 
-## Requirements
-Install the following packages (Debian/Ubuntu/Kali names):
+| Component | Role | Config |
+|-----------|------|--------|
+| **Sway** | Tiling Wayland compositor | [`sway/config`](sway/config) |
+| **Waybar** | Status bar | [`waybar/config`](waybar/config) · [`waybar/style.css`](waybar/style.css) |
+| **Rofi** | App launcher + powermenu | [`rofi/launchers/type-7/`](rofi/launchers/type-7/) · [`rofi/powermenu/type-6/`](rofi/powermenu/type-6/) |
+| **Kitty** | GPU-accelerated terminal | [`kitty/kitty.conf`](kitty/kitty.conf) |
+| **Mako** | Notification daemon | [`mako/config`](mako/config) |
+| **WOB** | Volume/brightness overlay | [`wob/wob.ini`](wob/wob.ini) |
+| **libinput-gestures** | Touchpad gestures | [`gestures/libinput-gestures.conf`](gestures/libinput-gestures.conf) |
 
-See [dependencies.txt](dependencies.txt) for the complete package list.
+## Quick Start
 
-Quick install:
 ```bash
-sudo apt update && sudo apt install -y $(tr '\n' ' ' < dependencies.txt | sed 's/#.*//g')
-```
-
-Notes:
-- `pactl` is used for audio volume; on PipeWire install `pipewire-pulse` (or `pulseaudio-utils` for PulseAudio).
-- Fonts: install a Nerd Font for icons/glyphs (e.g., JetBrainsMono Nerd Font).
-- Gestures: ensure your user is in the `input` group: `sudo gpasswd -a "$USER" input` then log out/in.
-
-## Install / Update
-Copy or symlink these into `~/.config`. Automated scripts are provided:
-
-### Full Automated Setup (Recommended for new installs)
-```bash
-# From the repo root
+# Full automated setup (deps, fonts, wallpaper, configs)
 bash setup.sh
-```
 
-This will:
-- Install required system packages (with confirmation)
-- Install JetBrainsMono Nerd Font (with confirmation)
-- Back up existing configs, link all config directories to `~/.config/`
-- Copy battery notification script to `~/.local/bin/`
-- Set up wallpaper from `assets/wallpapers/` (interactive selection)
-- Update sway config wallpaper path automatically
-- Download notification sounds to `~/.local/share/sounds/`
-- Add user to `input` group for gestures
-- Configure and start libinput-gestures
-
-### Quick Install (configs only)
-```bash
+# Or just link configs (if deps already installed)
 bash install.sh
 ```
-Links configs without dependency management or wallpaper setup.
 
-### Manual Install
+### Manual
+
 ```bash
-# From the repo root
-ln -s "$PWD/sway" ~/.config/sway
-ln -s "$PWD/waybar" ~/.config/waybar
-ln -s "$PWD/rofi" ~/.config/rofi
-ln -s "$PWD/kitty" ~/.config/kitty
-ln -s "$PWD/mako" ~/.config/mako
-ln -s "$PWD/wob" ~/.config/wob
-ln -s "$PWD/gestures/libinput-gestures.conf" ~/.config/libinput-gestures.conf
-
-# Copy battery script
+for dir in sway waybar rofi kitty mako wob; do
+  ln -sf "$PWD/$dir" ~/.config/"$dir"
+done
+ln -sf "$PWD/gestures/libinput-gestures.conf" ~/.config/
 mkdir -p ~/.local/bin
-cp waybar/scripts/battery_notify.sh ~/.local/bin/battery_notify.sh
-chmod +x ~/.local/bin/battery_notify.sh
+cp waybar/scripts/battery_notify.sh ~/.local/bin/
 ```
 
-### Autostart & Apply
-- Sway autostarts Waybar, Mako, and Gestures (see [sway/config](sway/config)).
-- Reload Sway after changes: `swaymsg reload`.
-- If needed, restart Waybar: `pkill waybar || true && waybar &`.
-- Refresh gestures: `libinput-gestures-setup restart`.
+Then reload: `swaymsg reload`
 
-## Keybindings (Super = Win key)
-From [sway/config](sway/config):
+## Keybindings
 
-Applications
-- Super (release): App launcher (Rofi Type-7)
-- Super + Enter: Terminal (Kitty)
-- Super + B: Browser (Firefox)
-- Super + F: File manager (Thunar)
-- Super + C: Clipboard menu (Rofi)
-- Super + X: Power menu (Rofi Type-6)
-- Super + L: Lock screen (swaylock)
+`Super` = Windows key
 
-CTF Mode
-- Super + F1: CTF lean mode (kills services, minimal waybar, foot terminal)
-- Super + F2: Restore normal mode (all services, kitty, full waybar)
+### Applications
 
-Window management
-- Focus: Super + Arrows (←/→/↑/↓)
-- Move: Super + Shift + Arrows
-- Split: Super + H (horizontal), Super + V (vertical)
-- Layout: Super + S (stack), Super + W (tabbed), Super + E (toggle)
-- Actions: Super + Space (float), Super + Shift + Space (focus mode toggle)
-- Kill: Super + Q
-- Fullscreen: Super + Shift + F
+| Key | Action |
+|-----|--------|
+| Super (release) | App launcher |
+| Super + Enter | Terminal (Kitty) |
+| Super + B | Browser (Firefox) |
+| Super + F | File manager (Thunar) |
+| Super + C | Clipboard history |
+| Super + X | Power menu |
+| Super + L | Lock screen |
 
-Workspaces
-- Switch: Super + 1..0
-- Move container: Super + Shift + 1..0
-- Prev/Next workspace: Super + Ctrl + Left/Right
+### Windows
 
-Screenshots
-- Print: Full screen → `Pictures/screenshot_YYYY-MM-DD_HH:MM:SS.png`
-- Super + Shift + S: Area to file (grim + slurp)
-- Super + Ctrl + S: Area to clipboard (wl-copy)
+| Key | Action |
+|-----|--------|
+| Super + Arrows | Focus |
+| Super + Shift + Arrows | Move |
+| Super + Q | Kill |
+| Super + Space | Toggle float |
+| Super + Shift + F | Fullscreen |
+| Super + H / V | Split horizontal / vertical |
+| Super + S / W / E | Layout: stack / tabbed / toggle |
 
-Media & Hardware Keys
-- Volume: XF86Audio{Raise/Lower/Mute} → `pactl`
-- Brightness: XF86MonBrightness{Up/Down} → `brightnessctl`
-- Mic Mute: XF86AudioMicMute → `pactl set-source-mute`
-- Playback: XF86Audio{Play/Pause/Next/Prev/Stop} → `playerctl`
-- Calculator: XF86Calculator → `qalculate-gtk`
-- Lock: XF86ScreenSaver → `swaylock`
+### Workspaces
 
-Session
-- Super + Shift + R: Reload Sway
-- Super + Shift + E: Exit Sway (confirmation dialog)
-- Super + L: Lock screen
+| Key | Action |
+|-----|--------|
+| Super + 1–0 | Switch |
+| Super + Shift + 1–0 | Move container |
+| Super + Ctrl + ←/→ | Prev / Next |
+| Super + KP_1–0 | Numpad switch |
+| Super + Shift + KP_1–0 | Numpad move |
 
-Touchpad
-- Tap: enabled, Natural scroll: enabled, Middle emulation: enabled
+### Screenshots
 
-## Touchpad Gestures
-From [gestures/libinput-gestures.conf](gestures/libinput-gestures.conf):
+| Key | Action |
+|-----|--------|
+| Print | Full screen → file |
+| Super + Shift + S | Select area → file |
+| Super + Ctrl + S | Select area → clipboard |
 
-3‑finger swipes
-- Left: Workspace next
-- Right: Workspace prev
-- Up: Workspace prev
-- Down: Workspace next
+### Media & Hardware
 
-Gesture service tips
-- Start on login: this config runs `libinput-gestures-setup start` from Sway autostart.
-- If you prefer session service: `libinput-gestures-setup autostart`.
-- User must be in `input` group.
+| Key | Action |
+|-----|--------|
+| XF86Audio Raise/Lower/Mute | Volume ±5% / toggle |
+| XF86AudioMicMute | Mic mute toggle |
+| XF86Audio Play/Pause/Next/Prev | Playerctl |
+| XF86MonBrightness Up/Down | Brightness ±10% |
+
+### CTF Mode
+
+| Key | Action |
+|-----|--------|
+| Super + F1 | CTF lean mode (minimal services, foot terminal) |
+| Super + F2 | Restore normal mode |
 
 ## Waybar
-Config at [waybar/config](waybar/config) and [waybar/style.css](waybar/style.css).
 
-Modules
-- Left: Appmenu, Workspaces, Sway Mode, Media (playerctl)
-- Center: Clock (with calendar on click)
-- Right: Weather, Network, Bluetooth, Volume, Brightness, CPU, Memory, Disk, Battery, Power
+Modules: **Left:** App menu · Workspaces · Sway mode · Now playing  
+**Center:** Clock (with calendar)  
+**Right:** Weather · Network · Bluetooth · Volume · Brightness · CPU · Memory · Disk · Battery · Power
 
-Clicks (custom modules)
-- Weather: Open wttr.in in browser
-- Network: Open nm-connection-editor
-- Bluetooth: Open blueman-manager
-- Volume: Toggle mute (left-click), pavucontrol (right-click)
-- Brightness: Scroll to adjust
-- CPU/Memory: Open btop
-- Power: Power menu (Rofi)
+Click actions: Weather → wttr.in, Network → nm-connection-editor, Bluetooth → blueman-manager, Volume → toggle mute / pavucontrol, CPU/Memory → btop, Power → Rofi powermenu.
 
-Note: Brightness device is set to `amdgpu_bl0` in the config; adjust as needed.
+Brightness device defaults to `amdgpu_bl0`. Adjust in `waybar/config` and `waybar/scripts/brightness.sh` if needed.
 
-## Rofi Menus & Launcher
-- App launcher: [rofi/launchers/type-7/launcher.sh](rofi/launchers/type-7/launcher.sh) (style-5 theme)
-- Power menu: [rofi/powermenu/type-6/powermenu.sh](rofi/powermenu/type-6/powermenu.sh) (with live system stats)
-- Scripts/shortcuts: [rofi/scripts/](rofi/scripts/) — launcher and powermenu type shortcuts
-- Image assets used by themes are under [rofi/images/](rofi/images/)
+## Touchpad Gestures
 
-Clipboard note
-- The binding uses `rofi -dmenu` with cliphist. If you use Greenclip, change to:
-	`rofi -modi "clipboard:greenclip print" -show clipboard` and install `greenclip`.
+| Gesture | Action |
+|---------|--------|
+| 3-finger swipe left | Workspace next |
+| 3-finger swipe right | Workspace prev |
+| 3-finger swipe up | Workspace prev |
+| 3-finger swipe down | Workspace next |
 
-## Battery Notifications & Mako
-### Mako Config
-Notification daemon styling at [mako/config](mako/config):
-- Default: Dark background (#1e1e2e), white text
-- Critical alerts: Red background (#b71c1c), orange border, no timeout
-- Font: JetBrainsMono Nerd Font, 10pt
+Requires `input` group: `sudo gpasswd -a "$USER" input` then log out/in.
 
-### Battery Monitor
-Script at [waybar/scripts/battery_notify.sh](waybar/scripts/battery_notify.sh):
-- Monitors battery status every 60 seconds (called from Sway autostart)
-- Low alert: At 30% battery capacity
-- Critical alert: At 10% battery capacity
-- Full charge alert: At 100% (when plugged in)
-- Plays notification sounds and sends desktop alerts via Mako
-- Debounce logic prevents repeat notifications until state changes
+## Battery Monitor
 
-### Setup Sounds
-Notification sounds are located in [assets/sounds/](assets/sounds/). To download them, use the install script or run:
-```bash
-mkdir -p ~/.local/share/sounds
-wget -O ~/.local/share/sounds/battery-low.wav https://actions.google.com/sounds/v1/alarms/beep_short.ogg
-wget -O ~/.local/share/sounds/battery-critical.wav https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg
-```
+Script at [`waybar/scripts/battery_notify.sh`](waybar/scripts/battery_notify.sh):
+- Polls every 60s, runs via Sway autostart
+- **Low:** 30% → `notify-send` + sound
+- **Critical:** 10% → urgent notification + sound
+- **Full:** 100% when charging → notification
+- Debounced — won't repeat until state changes
+
+Notification sounds in [`assets/sounds/`](assets/sounds/).
+
+## Rofi
+
+- **App launcher:** [`rofi/launchers/type-7/`](rofi/launchers/type-7/) — style-5 theme
+- **Power menu:** [`rofi/powermenu/type-6/`](rofi/powermenu/type-6/) — live CPU/RAM/temp/battery stats
+- **Color themes:** [`rofi/colors/`](rofi/colors/) — 16 presets (catppuccin, dracula, nord, etc.)
+- **Images:** [`rofi/images/`](rofi/images/) — used by launcher themes
+- **Clipboard:** Uses `cliphist` + `rofi -dmenu`. For Greenclip replace with: `rofi -modi "clipboard:greenclip print" -show clipboard`
+
+## Dependencies
+
+Debian/Ubuntu/Kali: `sway swaylock waybar rofi kitty mako-notifier grim slurp wl-clipboard brightnessctl playerctl foot blueman pavucontrol libinput-gestures libinput-tools thunar curl wget unzip`
+
+See [`dependencies.txt`](dependencies.txt).
 
 ## Troubleshooting
-- Gestures not working: ensure `groups | grep input` shows `input`. Then `libinput-gestures-setup restart`.
-- Waybar not showing data: run `waybar -l debug` to inspect. Verify executables like `brightnessctl`, `pactl` exist.
-- Screenshots: ensure `grim`, `slurp`, and `wl-clipboard` are installed.
-- Fonts/icons missing: verify Nerd Font is installed and selected in Kitty and Waybar icons display.
 
-## CTF Mode
-Bindings `Mod+F1` / `Mod+F2` toggle between CTF lean mode and normal desktop:
-- **CTF Mode** kills Mako, WOB, cliphist, Waybar; strips gaps/borders; launches minimal Waybar; swaps Kitty → Foot terminal.
-- **Normal Mode** restores all services, gaps, full Waybar, and Kitty.
-
-See [sway/ctf-mode.sh](sway/ctf-mode.sh) and [sway/normal-mode.sh](sway/normal-mode.sh).
-
-## Contributing / Personalization
-- Tweak paths and device names in [sway/config](sway/config) and [waybar/config](waybar/config).
-- Edit Rofi theme in [rofi/launchers/type-7/launcher.sh](rofi/launchers/type-7/launcher.sh).
-- Adjust images in [rofi/images/](rofi/images/) or update `.rasi` files under [rofi/launchers/](rofi/launchers/).
-
+- **Gestures:** `groups | grep input` shows `input`? Run `libinput-gestures-setup restart`.
+- **Waybar:** Run `waybar -l debug` to inspect. Check `brightnessctl`, `pactl` exist.
+- **Screenshots:** Install `grim`, `slurp`, `wl-clipboard`.
+- **Icons:** Install a Nerd Font (JetBrainsMono Nerd Font recommended).
+- **Audio:** `pactl` requires `pipewire-pulse` or `pulseaudio-utils`.
